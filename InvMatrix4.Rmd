@@ -1,0 +1,110 @@
+---
+title: "coursea r-programming assignment2"
+author: "kaz yama"
+date: "Wednesday, May 20, 2015"
+output: html_document
+---
+The following functions calculate the inverse of the matrix created with the functions. 
+However, it first checks to see if the inverse has already been calculated.
+If so, it gets the inverse from the cache and skips the computation. 
+Otherwise, it calculates the inverse of the matrix 
+sets the value of the inverse in the cache via the function in makeCacheMatrix
+note makecacheMatrix needs to be initialized after the object is created.
+it also uses the properties of inverse & transpose.
+```{r}
+makeCacheMatrix <- function(x = numeric()) {
+  m <- NULL
+  set <- function(y) {
+    x <<- y
+    m <<- solve(y)
+  }
+  getm <- function() x
+
+  getsolve<- function() m
+  list(set = set, getm = getm,
+       getsolve = getsolve)
+}
+
+
+cacheSolve <- function(xx,M,...) {
+  mm <- xx$getsolve()
+  data <- xx$getm()
+  if(!is.null(mm)&
+         isTRUE(all.equal(data,M))
+    ) {
+    message("getting cached data1")
+    return(mm)
+  }else if (!is.null(mm)&
+              isTRUE(all.equal(mm,M))
+            ){
+    message("getting cached data2")
+    return(data)    
+  }else if (!is.null(mm)&
+         isTRUE(all.equal(data,t(M)))
+    ){
+        message("getting cached data3")
+    return(t(mm))
+  }
+  else if(!is.null(mm)&
+              isTRUE(all.equal(mm,t(M)))
+    ){
+        message("getting cached data4")
+    return(t(data))
+  }
+  else{
+  message("solve")
+  xx$set(M)
+  return(xx$getsolve())
+  }
+}
+```
+
+Testing begin
+```{r, echo=TRUE}
+B = matrix( 
+  c(2, 4, 3, 1, 5, 7,6,8,9), 
+  nrow=3, 
+  ncol=3) 
+BB<-solve(B)
+B
+BB
+B%*%BB
+C = matrix( 
+  c(4, 9, 2, 3, 5, 7,8,1,6), 
+  nrow=3, 
+  ncol=3) 
+CC<-solve(C)
+C
+CC
+C%*%CC
+d=matrix(c(4,14,15,1,9,7,6,12,5,11,10,8,16,2,3,20),nrow=4,ncol=4)
+dd=solve(d)
+d
+dd
+d%*%dd
+
+yy2<-makeCacheMatrix(B)
+yy2$set(B)
+
+yy2$getsolve()
+yy2$getm()
+
+cacheSolve(yy2,B)
+cacheSolve(yy2,B)
+cacheSolve(yy2,t(B))
+cacheSolve(yy2,BB)
+cacheSolve(yy2,t(BB))
+
+cacheSolve(yy2,C)
+cacheSolve(yy2,C)
+cacheSolve(yy2,CC)
+cacheSolve(yy2,t(CC))
+
+cacheSolve(yy2,d)
+cacheSolve(yy2,d)
+cacheSolve(yy2,dd)
+cacheSolve(yy2,C)
+cacheSolve(yy2,CC)
+```
+
+Testing end
